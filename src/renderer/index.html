@@ -152,6 +152,11 @@
       background: var(--bg-input); color: var(--text-secondary); border: 1px solid var(--glass-border);
     }
     .detail-btn-secondary:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+    .detail-btn-success {
+      background: var(--accent-green); color: white; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+    .detail-btn-success:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4); }
+    .detail-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
 
     /* EMPTY STATE */
     .empty-state { text-align: center; padding: 48px 24px; color: var(--text-tertiary); }
@@ -332,6 +337,7 @@
 
             <div class="detail-actions">
               <button class="detail-btn detail-btn-primary" data-url="${escapeHtml(error.url)}">Open in Bugsnag</button>
+              <button class="detail-btn detail-btn-success" data-fix-id="${escapeHtml(error.id)}" data-fix-project="${escapeHtml(error.projectId)}">Fixed</button>
               <button class="detail-btn detail-btn-secondary" data-dismiss-id="${escapeHtml(error.id)}">Hide</button>
             </div>
           </div>
@@ -352,6 +358,22 @@
           e.stopPropagation();
           const url = btn.dataset.url;
           if (url && window.bugsnagbar) window.bugsnagbar.app.openExternal(url);
+        });
+      });
+
+      // Mark as Fixed
+      container.querySelectorAll('.detail-btn-success[data-fix-id]').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          if (window.bugsnagbar) {
+            btn.disabled = true;
+            btn.textContent = 'Fixing...';
+            const result = await window.bugsnagbar.bugsnag.fixError(btn.dataset.fixProject, btn.dataset.fixId);
+            if (!result.success) {
+              btn.disabled = false;
+              btn.textContent = 'Fixed';
+            }
+          }
         });
       });
 

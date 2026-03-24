@@ -156,6 +156,17 @@ export class BugsnagClient {
     };
   }
 
+  async updateErrorStatus(projectId: string, errorId: string, status: string): Promise<boolean> {
+    try {
+      await this.client.patch(`/projects/${projectId}/errors/${errorId}`, {
+        operation: 'fix',
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   async searchProjects(query: string): Promise<BugsnagProject[]> {
     const orgs = await this.getOrganizations();
     const allProjects: BugsnagProject[] = [];

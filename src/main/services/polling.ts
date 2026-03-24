@@ -176,13 +176,17 @@ class PollingService {
   }
 
   private emitUpdate(): void {
+    const dismissedErrors = config.get('dismissedErrors') || [];
+    const visibleErrors = this.lastData.errors.filter((e) => !dismissedErrors.includes(e.id));
+    const dataForRenderer = { ...this.lastData, errors: visibleErrors };
+
     if (this.onDataUpdate) {
-      this.onDataUpdate(this.lastData);
+      this.onDataUpdate(dataForRenderer);
     }
 
     BrowserWindow.getAllWindows().forEach((window) => {
       if (!window.isDestroyed()) {
-        window.webContents.send(IPC_CHANNELS.DATA_UPDATED, this.lastData);
+        window.webContents.send(IPC_CHANNELS.DATA_UPDATED, dataForRenderer);
       }
     });
   }
@@ -201,10 +205,8 @@ class PollingService {
 
   recalculateStatus(): void {
     const newStatus = this.calculateStatus(this.lastData.errors);
-    if (newStatus !== this.lastData.status) {
-      this.lastData = { ...this.lastData, status: newStatus };
-      this.emitUpdate();
-    }
+    this.lastData = { ...this.lastData, status: newStatus };
+    this.emitUpdate();
   }
 }
 

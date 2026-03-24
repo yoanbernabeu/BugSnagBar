@@ -13,6 +13,7 @@ const IPC_CHANNELS = {
   BUGSNAG_GET_ORGANIZATIONS: 'bugsnag:getOrganizations',
   BUGSNAG_DISMISS_ERROR: 'bugsnag:dismissError',
   BUGSNAG_RESTORE_ERRORS: 'bugsnag:restoreErrors',
+  BUGSNAG_FIX_ERROR: 'bugsnag:fixError',
   CONFIG_GET: 'config:get',
   CONFIG_SET: 'config:set',
   CONFIG_GET_ALL: 'config:getAll',
@@ -42,6 +43,7 @@ const api = {
     getOrganizations: () => ipcRenderer.invoke(IPC_CHANNELS.BUGSNAG_GET_ORGANIZATIONS),
     dismissError: (errorId: string) => ipcRenderer.invoke(IPC_CHANNELS.BUGSNAG_DISMISS_ERROR, errorId),
     restoreErrors: () => ipcRenderer.invoke(IPC_CHANNELS.BUGSNAG_RESTORE_ERRORS),
+    fixError: (projectId: string, errorId: string) => ipcRenderer.invoke(IPC_CHANNELS.BUGSNAG_FIX_ERROR, projectId, errorId),
   },
 
   config: {

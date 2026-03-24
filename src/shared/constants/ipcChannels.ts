@@ -14,6 +14,7 @@ export const IPC_CHANNELS = {
   BUGSNAG_GET_ORGANIZATIONS: 'bugsnag:getOrganizations',
   BUGSNAG_DISMISS_ERROR: 'bugsnag:dismissError',
   BUGSNAG_RESTORE_ERRORS: 'bugsnag:restoreErrors',
+  BUGSNAG_FIX_ERROR: 'bugsnag:fixError',
 
   // Configuration
   CONFIG_GET: 'config:get',

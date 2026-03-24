@@ -107,6 +107,25 @@ export function setupIpcHandlers(): void {
     return { success: true };
   });
 
+  ipcMain.handle(IPC_CHANNELS.BUGSNAG_FIX_ERROR, async (_, projectId: string, errorId: string) => {
+    try {
+      const activeAccounts = accounts.getActive();
+      for (const account of activeAccounts) {
+        const token = accounts.getToken(account.id);
+        if (!token) continue;
+        const client = getBugsnagClient(account.id, token);
+        const success = await client.updateErrorStatus(projectId, errorId, 'fixed');
+        if (success) {
+          await pollingService.refresh();
+          return { success: true };
+        }
+      }
+      return { success: false, error: 'Could not fix error' };
+    } catch (error) {
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
+  });
+
   ipcMain.handle(IPC_CHANNELS.BUGSNAG_RESTORE_ERRORS, () => {
     config.set('dismissedErrors', []);
     pollingService.recalculateStatus();
